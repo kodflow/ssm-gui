@@ -18,6 +18,8 @@ func main() {
 		Title:  "ssm-gui",
 		Width:  1024,
 		Height: 768,
+		//Frameless: true,
+		HideWindowOnClose: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},

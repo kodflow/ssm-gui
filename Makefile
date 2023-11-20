@@ -46,3 +46,7 @@ build-darwin:
 
 build:
 	wails build
+	open build/bin/ssm-gui.app
+
+dev:
+	wails dev
