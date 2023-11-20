@@ -8,9 +8,9 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-          {name: "assm-gui",platform: linux/amd64, os: ubuntu-latest},
-          {name: "assm-gui",platform: windows/amd64, os: windows-latest},
-          {name: "assm-gui",platform: darwin/universal, os: macos-latest}
+          {name: "ssm-gui",platform: linux/amd64, os: ubuntu-latest},
+          {name: "ssm-gui",platform: windows/amd64, os: windows-latest},
+          {name: "ssm-gui",platform: darwin/universal, os: macos-latest}
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
