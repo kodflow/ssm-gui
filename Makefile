@@ -42,4 +42,7 @@ build-linux:
 	wails build -platform linux/arm64,linux/amd64
 
 build-darwin:
-	wails build -platform darwin/universal
+	wails build -platform darwin/arm64,darwin/amd64
+
+build:
+	wails build
