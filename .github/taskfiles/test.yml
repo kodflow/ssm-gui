@@ -1,0 +1,30 @@
+version: '3'
+
+
+tasks:
+
+  darwin:
+    summary: Builds the application
+    cmds:
+      - go build -gcflags=all="-N -l" -o bin/gssm
+    env:
+      CGO_CFLAGS: "-mmacosx-version-min=10.14"
+      CGO_LDFLAGS: "-mmacosx-version-min=10.14"
+      MACOSX_DEPLOYMENT_TARGET: "10.14"
+
+  linux:
+    summary: Builds the application for Linux
+    cmds:
+      - go build -gcflags=all="-N -l" -o bin/gssm
+
+  windows:
+    summary: Builds the application for Windows
+    cmds:
+      - go build -gcflags=all="-N -l" -o bin/gssm.exe
+
+  all:
+    summary: Builds the application
+    cmds:
+      - task: darwin
+      - task: linux
+      - task: windows

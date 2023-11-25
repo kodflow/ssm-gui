@@ -1,6 +1,8 @@
-build/bin
-build/windows
-build/darwin
-build/linux
 node_modules
 frontend/dist
+build/bin
+node_modules
+frontend/dist
+.task
+vendor
+.DS_Store

@@ -32,6 +32,9 @@ help: #Pour générer automatiquement l'aide ## Display all commands available
 
 build-all: clean build-windows build-linux build-darwin
 
+install:
+	task --list-all
+
 clean:
 	rm -rf build/bin
 

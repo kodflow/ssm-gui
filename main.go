@@ -2,35 +2,42 @@ package main
 
 import (
 	"embed"
+	_ "embed"
+	"log"
 
-	"github.com/wailsapp/wails/v2"
-	"github.com/wailsapp/wails/v2/pkg/options"
-	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
-//go:embed all:frontend/dist
+//go:embed ui/dist
 var assets embed.FS
 
 func main() {
-	app := NewApp()
-
-	err := wails.Run(&options.App{
-		Title:  "ssm-gui",
-		Width:  1024,
-		Height: 768,
-		//Frameless: true,
-		HideWindowOnClose: true,
-		AssetServer: &assetserver.Options{
-			Assets: assets,
+	app := application.New(application.Options{
+		Name:        "gssm",
+		Description: "A demo of using raw HTML & CSS",
+		Assets: application.AssetOptions{
+			FS: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
-		OnStartup:        app.startup,
-		Bind: []interface{}{
-			app,
+		Mac: application.MacOptions{
+			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
+	// Create window
+	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+		Title: "Plain Bundle",
+		CSS:   `body { background-color: rgba(255, 255, 255, 0); } .main { color: white; margin: 20%; }`,
+		Mac: application.MacWindow{
+			InvisibleTitleBarHeight: 50,
+			Backdrop:                application.MacBackdropTranslucent,
+			TitleBar:                application.MacTitleBarHiddenInset,
+		},
+
+		URL: "/",
+	})
+
+	err := app.Run()
 
 	if err != nil {
-		println("Error:", err.Error())
+		log.Fatal(err)
 	}
 }

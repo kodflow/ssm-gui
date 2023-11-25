@@ -1,0 +1,50 @@
+version: '3'
+
+tasks:
+  install:
+    summary: Install Node.js and Go dependencies
+    cmds:
+      - task: install-node
+      - task: install-go
+
+  update:
+      summary: Update Node.js and Go dependencies to the latest versions
+      cmds:
+        - task: update-node
+        - task: update-go
+
+  install-node:
+    summary: Install Node.js dependencies
+    dir: ui
+    sources:
+      - package.json
+      - package-lock.json
+    generates:
+      - node_modules/*
+    preconditions:
+      - sh: npm version
+        msg: "Looks like npm isn't installed. Npm is part of the Node installer: https://nodejs.org/en/download/"
+    cmds:
+      - npm install
+
+  update-node:
+    summary: Update Node.js dependencies to the latest versions
+    dir: ui
+    cmds:
+      - npm update
+
+  install-go:
+    summary: Install Go dependencies
+    dir: .
+    preconditions:
+      - sh: go version
+        msg: "Go is not installed. Please download and install it from https://golang.org/dl/"
+    cmds:
+      - go mod download
+
+  update-go:
+    summary: Update Go dependencies to the latest versions
+    dir: .
+    cmds:
+      - go get -u ./...
+      - go mod tidy
