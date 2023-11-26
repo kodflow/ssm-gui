@@ -1,13 +1,24 @@
 version: '3'
 
+checksum: false
+
 env:
-  ARCHS: "arm64 amd64"
-  OS: "darwin linux windows"
+  BIN: /{{.HOME}}/go/bin/wails3
+  ARCHS: arm64 amd64
+  OSS: darwin #linux windows
 
 tasks:
 
+  icons:
+    summary: Generates Windows `.ico` and Mac `.icns` files from an image
+    dir: build
+    cmds:
+      - ${BIN} generate icons -input appicon.png
+
   ui:
     summary: Build the frontend project
+    deps:
+      - icons
     dir: ui
     cmds:
       - npm run build
@@ -24,29 +35,21 @@ tasks:
     cmds:
       - task: ui
       - for: { var: ARCHS }
-        cmd: GOARCH={{.ITEM}} GOOS=windows go build -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-windows-{{.ITEM}}.exe
+        cmd: GOARCH={{.ITEM}} GOOS=windows go build -tags production -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-windows-{{.ITEM}}.exe
 
   darwin:
     summary: Builds the application
     cmds:
       - task: ui
       - for: { var: ARCHS }
-        cmd: GOARCH={{.ITEM}} GOOS=darwin go build -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-darwin-{{.ITEM}}
+        cmd: GOARCH={{.ITEM}} GOOS=darwin go build -tags production -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-darwin-{{.ITEM}}
     env:
-      CGO_CFLAGS: "-mmacosx-version-min=10.14"
-      CGO_LDFLAGS: "-mmacosx-version-min=10.14"
-      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      CGO_CFLAGS: "-mmacosx-version-min=10.13"
+      CGO_LDFLAGS: "-mmacosx-version-min=10.13"
+      MACOSX_DEPLOYMENT_TARGET: "10.13"
 
   all:
     summary: Builds the application
     cmds:
-      - task: darwin
-      - task: linux
-      - task: windows
-
-  generate-icons:
-    summary: Generates Windows `.ico` and Mac `.icns` files from an image
-    dir: build
-    cmds:
-      # Generates both .ico and .icns files
-      - wails3 generate icons -input appicon.png
+      - for: { var: OSS }
+        cmd: task build:{{.ITEM}}

@@ -6,3 +6,5 @@ frontend/dist
 .task
 vendor
 .DS_Store
+*ico*.ic*
+release

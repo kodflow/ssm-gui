@@ -8,10 +8,10 @@ tasks:
       - task: install-go
 
   update:
-      summary: Update Node.js and Go dependencies to the latest versions
-      cmds:
-        - task: update-node
-        - task: update-go
+    summary: Update Node.js and Go dependencies to the latest versions
+    cmds:
+      - task: update-node
+      - task: update-go
 
   install-node:
     summary: Install Node.js dependencies
