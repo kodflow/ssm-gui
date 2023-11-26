@@ -6,7 +6,7 @@ vars:
 includes:
   vendor: .github/taskfiles/vendor.yml
   build: .github/taskfiles/build.yml
-  package: .github/taskfiles/package.yml
+  #package: .github/taskfiles/package.yml
 
 tasks:
   default:

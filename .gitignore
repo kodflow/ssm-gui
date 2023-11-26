@@ -1,8 +1,7 @@
 node_modules
-frontend/dist
 build/bin
 node_modules
-frontend/dist
+ui/dist
 .task
 vendor
 .DS_Store

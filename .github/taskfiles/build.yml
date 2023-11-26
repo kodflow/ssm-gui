@@ -1,22 +1,28 @@
 version: '3'
 
-checksum: false
-
 env:
-  BIN: /{{.HOME}}/go/bin/wails3
-  ARCHS: arm64 amd64
-  OSS: darwin #linux windows
+  BIN: "{{.HOME}}/go/bin/wails3"
+  ARCHS: "arm64"
+  OSS: "darwin linux windows"
 
 tasks:
 
   icons:
     summary: Generates Windows `.ico` and Mac `.icns` files from an image
     dir: build
+    platforms: 
+      - darwin
+      - linux
+      - windows
     cmds:
       - ${BIN} generate icons -input appicon.png
 
   ui:
     summary: Build the frontend project
+    platforms: 
+      - darwin
+      - linux
+      - windows
     deps:
       - icons
     dir: ui
@@ -25,31 +31,54 @@ tasks:
 
   linux:
     summary: Builds the application for Linux
+    platforms: 
+      - linux
     cmds:
-      - task: ui
       - for: { var: ARCHS }
-        cmd: GOARCH={{.ITEM}} GOOS=linux go build -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-linux-{{.ITEM}}
+        cmd: GOARCH={{.ITEM}} GOOS=linux go build -tags production -gcflags=all="-N -l" -o build/bin/{{.APP_NAME}}-linux-{{.ITEM}}
 
   windows:
     summary: Builds the application for Windows
+    platforms: 
+      - windows
     cmds:
-      - task: ui
       - for: { var: ARCHS }
-        cmd: GOARCH={{.ITEM}} GOOS=windows go build -tags production -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-windows-{{.ITEM}}.exe
+        cmd: GOARCH={{.ITEM}} GOOS=windows go build -tags production -gcflags=all="-N -l" -o build/bin/{{.APP_NAME}}-windows-{{.ITEM}}.exe
 
+  darwin-package:
+    summary: Builds the application
+    platforms: 
+      - darwin
+    cmds:
+        - rm -rf build/release/{{.APP_NAME}}-{{.ARCH}}.app
+        - mkdir -p build/release/{{.APP_NAME}}-{{.ARCH}}.app/Contents/{MacOS,Resources}
+        - cp build/icons.icns build/release/{{.APP_NAME}}-{{.ARCH}}.app/Contents/Resources
+        - cp build/bin/{{.APP_NAME}}-darwin-{{.ARCH}} build/release/{{.APP_NAME}}-{{.ARCH}}.app/Contents/MacOS/{{.APP_NAME}}
+        - cp build/Info.plist build/release/{{.APP_NAME}}-{{.ARCH}}.app/Contents
+    args:
+      ARCH: ""  # Ajout d'un argument ARCH
+  
   darwin:
     summary: Builds the application
+    platforms: 
+      - darwin
+    for: { var: ARCHS }
     cmds:
-      - task: ui
       - for: { var: ARCHS }
-        cmd: GOARCH={{.ITEM}} GOOS=darwin go build -tags production -gcflags=all="-N -l" -o bin/{{.APP_NAME}}-darwin-{{.ITEM}}
+        cmd: GOARCH={{.ITEM}} GOOS=darwin go build -tags production -gcflags=all="-N -l" -o build/bin/{{.APP_NAME}}-darwin-{{.ITEM}}
+      - for: { var: ARCHS }
+        task: darwin-package
+        vars:
+          ARCH: "{{.ITEM}}"
     env:
       CGO_CFLAGS: "-mmacosx-version-min=10.13"
       CGO_LDFLAGS: "-mmacosx-version-min=10.13"
       MACOSX_DEPLOYMENT_TARGET: "10.13"
 
-  all:
-    summary: Builds the application
+  default:
+    summary: Builds the application 
+    deps: 
+      - ui
     cmds:
       - for: { var: OSS }
         cmd: task build:{{.ITEM}}

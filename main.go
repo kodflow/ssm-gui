@@ -22,6 +22,7 @@ func main() {
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
 	})
+
 	// Create window
 	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
 		Title: "Plain Bundle",
